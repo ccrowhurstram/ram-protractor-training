@@ -17,38 +17,27 @@
 // 4. Find the email address for John Rambo
 // 5. Get the Email columns information
 
-import { browser, element, by, ElementFinder } from "protractor/built";
+import { ItemList } from "./screens/item-list";
+import { UserListScreen, UserList } from "./exercise2-screen";
+
 
 describe("Exercise 2 - ", () => {
+    let screen: UserListScreen;
     beforeAll(() => {
-        browser.get('http://localhost:9000/#/exercise2');
-    });
-
-    it('can count users using `element.all`', () => {
-        const count = element.all(by.css('tbody > tr')).count();
-        expect(count).toBeGreaterThan(0);
+        screen.open();
     });
 
     it('can count users using `by.repeater`', () => {
-        const count = element.all(by.repeater('row in ctrl.userList')).count();
-        expect(count).toBeGreaterThan(0);
+        expect(screen.userList.items.count()).toBeGreaterThan(0);
     });
 
     it('can find email address in first row', () => {
-        const firstRowEmail = element.all(by.repeater('row in ctrl.userList'))
-            .get(0)
-            .element(by.binding('row.email'));
-
-        expect(firstRowEmail.getText()).toBe('chuck@gmail.com');
+        expect(screen.userList.get(0).email.getText()).toBe('chuck@gmail.com');
     });
 
     it('can find email address for "John Rambo"', async () => {
-        const ramboRow = await element.all(by.repeater('row in ctrl.userList'))
-            .filter(row => {
-                return row.element(by.binding('row.name')).getText().then(name => name === 'John Rambo')
-            })
-            .map(row => row.element(by.binding('row.email')).getText());
-        expect(ramboRow[0]).toBe('rambo@gmail.com');
+        const ramboRow = screen.userList.find(UserList.where.nameEq('John Rambo'))
+        expect(ramboRow.email.getText()).toBe('rambo@gmail.com');
     });
 
 });

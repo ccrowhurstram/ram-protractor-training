@@ -23,10 +23,6 @@ import { browser, element, by } from "protractor";
 
 describe("Exercise 1 - ", () => {
 
-    beforeAll(() => {
-        browser.get(browser.baseUrl);
-    });
-
     describe("when user open the contact info form - ", () => {
         beforeAll(() => {
             browser.get('http://localhost:9000/#/exercise1');
@@ -105,7 +101,8 @@ describe("Exercise 1 - ", () => {
             input.sendKeys('c.c@gmail.com');
 
             // then
-            
+            const errorMsg = input.element(by.xpath('following-sibling::span'));
+            expect(errorMsg.getAttribute('class')).toBe('ng-hide');
         });
         
         it('when invalid should show validation error', () => {
@@ -116,7 +113,7 @@ describe("Exercise 1 - ", () => {
 
             // then  
             const errorMsg = input.element(by.xpath('following-sibling::span'));
-            expect(errorMsg.isPresent()).toBe(true);
+            expect(errorMsg.getAttribute('class')).not.toBe('ng-hide');
         });
     });
 });
