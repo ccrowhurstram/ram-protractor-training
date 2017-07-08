@@ -3,11 +3,7 @@ import { ElementArrayFinder, ElementFinder } from "protractor/built";
 import { Locator } from "protractor/built/locators";
 import { ItemList } from "./screens/item-list";
 
-export class UserList extends ItemList<UserRow, UserList> {
-
-    protected create(items: ElementArrayFinder) {
-        return new UserList(items);
-    }
+export class UserList extends ItemList<UserRow> {
 
     protected wrap(item: ElementFinder) {
         return new UserRow(item);

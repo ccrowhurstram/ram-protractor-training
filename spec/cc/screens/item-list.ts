@@ -1,13 +1,18 @@
 import { ElementArrayFinder, promise, ElementFinder } from "protractor/built";
 
-export abstract class ItemList<TItem, TList extends ItemList<TItem, TList>> {
-    constructor(public items: ElementArrayFinder) {}
+type ItemListType<TList> = new(items: ElementArrayFinder) => TList;
+
+export abstract class ItemList<T> {
+    private type: ItemListType<ItemList<T>>;
+    constructor(public items: ElementArrayFinder) {
+        this.type = Object.getPrototypeOf(this).constructor;
+    }
     
     get(index: number) {
         return this.wrap(this.items.get(index));
     }
 
-    filter(predicate: (item: TItem, index: number) => promise.Promise<boolean> | boolean) {
+    filter(predicate: (item: T, index: number) => promise.Promise<boolean> | boolean) {
         const matches = this.items.filter((item, idx) => {
             const wrapper = this.wrap(item);
             return predicate(wrapper, idx);
@@ -19,10 +24,12 @@ export abstract class ItemList<TItem, TList extends ItemList<TItem, TList>> {
         return this.get(0);
     }
 
-    find(predicate: (item: TItem, index: number) => promise.Promise<boolean> | boolean) {
+    find(predicate: (item: T, index: number) => promise.Promise<boolean> | boolean) {
         return this.filter(predicate).first();
     }
 
-    protected abstract create(items: ElementArrayFinder): TList;
-    protected abstract wrap(item: ElementFinder): TItem;
+    protected create(items: ElementArrayFinder): ItemList<T> {
+        return new this.type(items);
+    }
+    protected abstract wrap(item: ElementFinder): T;
 }
